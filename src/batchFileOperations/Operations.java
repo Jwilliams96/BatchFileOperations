@@ -8,7 +8,7 @@ import java.io.File;
  */
 public interface Operations {
     
-    File[] getNewFiles();
+    StringBuilder[] getNewFileNames();
     boolean isOperational();
     void displayOperation();
 }

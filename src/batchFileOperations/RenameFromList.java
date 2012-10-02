@@ -132,7 +132,7 @@ public class RenameFromList extends javax.swing.JFrame {
     private void jbtnRenameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnRenameActionPerformed
         for (int i = 0; i < operations.size(); i++) {
             Operations thisOperation = (Operations)operations.getElementAt(0);
-            theseFiles.setNewFiles(thisOperation.getNewFiles());
+            theseFiles.setNewFileNames(thisOperation.getNewFileNames());
             theseFiles.rename(jLstOriginalFiles.getSelectedIndices());
         }
         

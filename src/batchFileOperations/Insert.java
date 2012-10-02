@@ -15,14 +15,15 @@ public class Insert implements Operations {
 
     private boolean isOperational;
     private File[] originalFiles;
-    private File[] newFiles;
+    private StringBuilder[] newFiles;
     private StringBuilder inputText;
-    private char inputValue = '0';
+    private String inputValue= "";
+    private int inputInt;
     private JPanel myPanel = new JPanel();
     private JTextField insertWord = new JTextField(20);
     private JTextField insertChar = new JTextField(5);
 
-    public Insert(File[] originalFiles) {
+    public Insert(StringBuilder[] originalFiles) {
         myPanel.add(new JLabel("Word to Insert ([n] to add a number):"));
         myPanel.add(insertWord);
         myPanel.add(Box.createHorizontalStrut(15));
@@ -33,7 +34,11 @@ public class Insert implements Operations {
                 "Please Enter Values", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             this.inputText = new StringBuilder(insertWord.getText());
-            this.inputValue = insertChar.getText().charAt(0);
+            if (Character.isDigit(insertChar.getText().charAt(0))) {
+                this.inputInt = Integer.valueOf(insertChar.getText());
+            } else {
+                this.inputValue = insertChar.getText();
+            }
         } else {
             isOperational = false;
         }
@@ -44,9 +49,9 @@ public class Insert implements Operations {
         int result = JOptionPane.showConfirmDialog(null, myPanel,
                 "Please Enter Values", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
-            this.inputText.delete(0, inputText.length()-1);
+            this.inputText.delete(0, inputText.length() - 1);
             this.inputText.append(insertWord.getText());
-            this.inputValue = insertChar.getText().charAt(0);
+            this.inputValue = insertChar.getText();
         }
     }
 
@@ -56,12 +61,17 @@ public class Insert implements Operations {
     }
 
     @Override
-    public File[] getNewFiles() {
-        
+    public StringBuilder[] getNewFileNames() {
+        int searchValue = inputInt;
+        for (int i = 0; i < newFiles.length; i++) {
+            if(!Character.isDigit(insertChar.getText().charAt(0))){
+            searchValue = newFiles[i].indexOf(inputValue);
+        } 
+            newFiles[i].insert(searchValue, inputText.toString());
+        }
         return newFiles;
     }
-    
-    public void rename(int i[]){
-        
+
+    public void rename(int i[]) {
     }
 }
