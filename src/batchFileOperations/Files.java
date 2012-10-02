@@ -8,59 +8,68 @@ import java.io.File;
  */
 public class Files {
 
-    public Files(File[] originalFileNames) {
-        this.originalFileNames = originalFileNames;
+    private File originalFiles[];
+    private String newFiles[];
+
+    public Files(File[] originalFiles) {
+        this.originalFiles = originalFiles;
+        this.newFiles = new String[originalFiles.length];
+        for (int i = 0; i < originalFiles.length; i++) {
+            this.newFiles[i] = originalFiles[i].getName();
+        }
+
+
     }
 
-    private File originalFileNames[];
-    private File newFileNames[];
-
-    public File[] getOriginalFileNames() {
-        return originalFileNames;
+    public File[] getOriginalFile() {
+        return originalFiles;
     }
 
-    public File getOriginalFileNames(int i) {
-        return originalFileNames[i];
+    public File getOriginalFile(int i) {
+        return originalFiles[i];
     }
 
-    public void setOriginalFileNames(File[] originalFileNames) {
-        this.originalFileNames = originalFileNames;
+
+    public void setOriginalFile(File originalFile, int i) {
+        originalFiles[i] = originalFile;
     }
 
-    public void setOriginalFileNames(File originalFileName, int i) {
-        originalFileNames[i] = originalFileName;
+    public String[] getNewFiles() {
+        return newFiles;
     }
 
-    public File[] getNewFileNames() {
-        return newFileNames;
+    public String getNewFile(int i) {
+        return newFiles[i];
     }
 
-    public File getNewFileNames(int i) {
-        return newFileNames[i];
+   
+    public void setNewFile(String newFile, int i) {
+        this.newFiles[i] = newFile;
     }
 
-    public void setNewFileNames(File[] newFileNames) {
-        this.newFileNames = newFileNames;
+    public int getNewFilesLength() {
+        return this.originalFiles.length;
     }
-        public void setNewFileNames(File newFileNames, int i) {
-        this.newFileNames[i] = newFileNames;
-    }
-    public int getLength(){
-        return this.originalFileNames.length;
-    }
-    
-    public String[] getFileNames(){
-        String[] fileNames = new String[this.getLength()];
+
+    public String[] getFileNames() {
+        String[] fileNames = new String[this.getNewFilesLength()];
         for (int i = 0; i < fileNames.length; i++) {
-            fileNames[i] = this.getOriginalFileNames(i).getName();
+            fileNames[i] = this.getNewFile(i);
         }
         return fileNames;
-    } 
-    public String[] getFileNames(int[] i){
+    }
+
+    public String[] getFileNames(int[] i) {
         String[] fileNames = new String[i.length];
         for (int j = 0; j < i.length; j++) {
-            fileNames[j] = this.getOriginalFileNames(i[j]).getName();
+            fileNames[j] = this.getNewFile(i[j]);
         }
         return fileNames;
+    }
+
+    public void rename(int[] i) {
+        for (int j = 0; j < i.length; j++) {
+            originalFiles[i[j]].renameTo(new File(newFiles[j]));
+        }
     }
 }

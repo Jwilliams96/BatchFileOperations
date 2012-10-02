@@ -19,8 +19,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class RenameFromList extends javax.swing.JFrame {
 
-    private Files newFiles;
+    private Files theseFiles;
     private JFileChooser chooseFiles;
+    private DefaultListModel operations = new DefaultListModel();
 
     /**
      * Creates new form RenameFromList
@@ -32,15 +33,14 @@ public class RenameFromList extends javax.swing.JFrame {
         chooseFiles.setFileFilter(Filters.getVideoFilter());
         chooseFiles.setMultiSelectionEnabled(true);
         chooseFiles.showOpenDialog(null);
-        newFiles = new Files(chooseFiles.getSelectedFiles());
+        theseFiles = new Files(chooseFiles.getSelectedFiles());
         DefaultListModel selectedFiles = new DefaultListModel();
         for (int i = 0;
-                i < newFiles.getLength();
+                i < theseFiles.getNewFilesLength();
                 i++) {
-            selectedFiles.addElement(newFiles.getOriginalFileNames(i));
+            selectedFiles.addElement(theseFiles.getNewFile(i));
         }
-
-        jLstOriginalFiles.setListData(newFiles.getFileNames());
+        jLstOriginalFiles.setListData(theseFiles.getFileNames());
 
     }
 
@@ -55,7 +55,7 @@ public class RenameFromList extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jLstOriginalFiles = new javax.swing.JList();
-        jButton1 = new javax.swing.JButton();
+        jbtnRename = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jLstNewNames = new javax.swing.JList();
         jDDLSelectOperation = new javax.swing.JComboBox();
@@ -63,11 +63,6 @@ public class RenameFromList extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLstOriginalFiles.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
-        jLstOriginalFiles.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
         jLstOriginalFiles.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 jLstOriginalFilesValueChanged(evt);
@@ -75,13 +70,13 @@ public class RenameFromList extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jLstOriginalFiles);
 
-        jButton1.setText("Rename");
-
-        jLstNewNames.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
+        jbtnRename.setText("Rename");
+        jbtnRename.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnRenameActionPerformed(evt);
+            }
         });
+
         jScrollPane2.setViewportView(jLstNewNames);
 
         jDDLSelectOperation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Insert", "Modify", "Replace" }));
@@ -102,7 +97,7 @@ public class RenameFromList extends javax.swing.JFrame {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
+                    .addComponent(jbtnRename, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
                     .addComponent(jDDLSelectOperation, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -116,7 +111,7 @@ public class RenameFromList extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jDDLSelectOperation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)))
+                        .addComponent(jbtnRename)))
                 .addContainerGap())
         );
 
@@ -124,16 +119,24 @@ public class RenameFromList extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jLstOriginalFilesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jLstOriginalFilesValueChanged
-        jLstNewNames.setListData(newFiles.getFileNames(jLstOriginalFiles.getSelectedIndices()));
+        jLstNewNames.setListData(theseFiles.getFileNames(jLstOriginalFiles.getSelectedIndices()));
     }//GEN-LAST:event_jLstOriginalFilesValueChanged
 
     private void jDDLSelectOperationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jDDLSelectOperationActionPerformed
-        Container container = getContentPane();
-        
-        container.add(new Insert(), BorderLayout.CENTER);
-        container.setSize(400, 300);
-        JOptionPane.showInputDialog(container, "Enter bitch");
+        switch (jDDLSelectOperation.getSelectedIndex()) {
+            case 0:
+                operations.addElement(new Insert(theseFiles.getNewFiles()));
+        }
     }//GEN-LAST:event_jDDLSelectOperationActionPerformed
+
+    private void jbtnRenameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnRenameActionPerformed
+        for (int i = 0; i < operations.size(); i++) {
+            Operations thisOperation = (Operations)operations.getElementAt(0);
+            theseFiles.setNewFiles(thisOperation.getNewFiles());
+            theseFiles.rename(jLstOriginalFiles.getSelectedIndices());
+        }
+        
+    }//GEN-LAST:event_jbtnRenameActionPerformed
 
     /**
      * @param args the command line arguments
@@ -150,11 +153,11 @@ public class RenameFromList extends javax.swing.JFrame {
 
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JComboBox jDDLSelectOperation;
     private javax.swing.JList jLstNewNames;
     private javax.swing.JList jLstOriginalFiles;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JButton jbtnRename;
     // End of variables declaration//GEN-END:variables
 }
